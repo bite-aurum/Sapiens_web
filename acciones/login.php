@@ -10,7 +10,6 @@ if ($correo === '' || $contrasena === '') {
     ir('../index.php', 'Escribe tu correo y tu contraseña', 'error');
 }
 
-// buscamos el correo en las tres tablas, igual que la app movil
 $roles = ['alumno', 'docente', 'coordinador'];
 
 foreach ($roles as $rol) {
