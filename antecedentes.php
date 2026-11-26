@@ -1,37 +1,46 @@
 <?php
-// antecedentes, los textos los edita el admin
-require_once 'includes/publico.php';
-list($pagina, $secciones) = cargarPagina('antecedentes');
+include 'conexion.php';
+include 'funciones.php';
+$pag = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'antecedentes'"));
+$res = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $pag[id_pagina] ORDER BY orden");
+$secciones = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-$titulo = 'Antecedentes';
-include 'includes/cabecera.php';
+$primera  = array_shift($secciones);
+$ultima   = array_pop($secciones);
+$tarjetas = $secciones;
+
+$titulo = "Antecedentes";
+include 'header.php';
 ?>
-<!-- portada -->
-<header class="bg-primary text-white text-center py-5">
-    <div class="container">
-        <small class="text-uppercase"><?= e($pagina['etiqueta']) ?></small>
-        <h1 class="fw-bold mt-2"><?= e($pagina['titulo']) ?></h1>
-        <p class="lead mb-0"><?= e($pagina['subtitulo']) ?></p>
-    </div>
-</header>
+  <main>
+    <section class="acerca-portada">
+      <small><?= $pag['etiqueta'] ?></small>
+      <h1><?= $pag['titulo'] ?></h1>
+      <p><?= $pag['subtitulo'] ?></p>
+      <?php if ($pag['imagen']) { ?><img class="portada-img" src="assets/img/<?= $pag['imagen'] ?>"><?php } ?>
+    </section>
 
-<!-- secciones -->
-<main class="container py-5">
-    <div class="row g-4">
-        <?php foreach ($secciones as $s): ?>
-            <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h2 class="h5 fw-bold"><?= e($s['titulo']) ?></h2>
-                        <p class="mb-0"><?= nl2br(e($s['texto'])) ?></p>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+    <section class="seccion">
+      <h2><?= $primera['titulo'] ?></h2>
+      <p><?= $primera['texto'] ?></p>
+    </section>
 
-    <div class="text-center mt-5">
-        <a href="registro.php" class="btn btn-primary btn-lg">Crear mi cuenta</a>
-    </div>
-</main>
-<?php include 'includes/pie.php'; ?>
+    <section class="seccion seccion-gris">
+      <h2>¿Qué cambió en la versión web?</h2>
+      <div class="tarjetas">
+        <?php foreach ($tarjetas as $t) { ?>
+          <div class="tarjeta">
+            <h3><?= $t['titulo'] ?></h3>
+            <p><?= $t['texto'] ?></p>
+          </div>
+        <?php } ?>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2><?= $ultima['titulo'] ?></h2>
+      <p><?= $ultima['texto'] ?></p>
+      <a href="registro.php" class="btn btn-primario boton-final">Crear mi cuenta</a>
+    </section>
+  </main>
+<?php include 'footer.php'; ?>

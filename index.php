@@ -1,68 +1,46 @@
 <?php
-// inicio e inicio de sesion
-require_once 'includes/publico.php';
-list($pagina, $secciones) = cargarPagina('inicio');
-
-$titulo = 'Inicio';
-include 'includes/cabecera.php';
+include 'conexion.php';
+include 'funciones.php';
+$pag   = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'inicio'"));
+$datos = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $pag[id_pagina] ORDER BY orden");
+$titulo = "Inicio";
+include 'header.php';
 ?>
-<main class="bg-light py-5">
-    <div class="container py-lg-4">
-        <div class="row align-items-center g-5">
-
-            <!-- texto de bienvenida, lo edita el admin -->
-            <div class="col-lg-7">
-                <span class="badge text-bg-primary mb-3"><?= e($pagina['etiqueta']) ?></span>
-                <h1 class="display-5 fw-bold"><?= e($pagina['titulo']) ?></h1>
-                <p class="lead text-muted"><?= e($pagina['subtitulo']) ?></p>
-
-                <!-- numeros de la portada -->
-                <div class="row text-center mt-4">
-                    <?php foreach ($secciones as $s): ?>
-                        <div class="col">
-                            <div class="h3 fw-bold text-primary mb-0"><?= e($s['titulo']) ?></div>
-                            <small class="text-muted"><?= e($s['texto']) ?></small>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <!-- formulario de inicio de sesion -->
-            <div class="col-lg-5">
-                <div class="card shadow-sm border-0" id="login">
-                    <div class="card-body p-4">
-                        <h2 class="h4 fw-bold">Iniciar sesión</h2>
-                        <p class="text-muted">Ingresa con tu cuenta institucional</p>
-
-                        <?php if (!empty($_GET['error'])): ?>
-                            <div class="alert alert-danger py-2"><?= e($_GET['error']) ?></div>
-                        <?php endif; ?>
-                        <?php if (!empty($_GET['mensaje'])): ?>
-                            <div class="alert alert-success py-2"><?= e($_GET['mensaje']) ?></div>
-                        <?php endif; ?>
-
-                        <form method="POST" action="acciones/login.php">
-                            <div class="mb-3">
-                                <label for="correo" class="form-label">Correo</label>
-                                <input type="email" name="correo" id="correo" class="form-control" placeholder="tucorreo@uthh.edu.mx" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="contrasena" class="form-label">Contraseña</label>
-                                <input type="password" name="contrasena" id="contrasena" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 fw-bold">Entrar</button>
-                        </form>
-
-                        <p class="mt-3 mb-1 small">¿Aún no tienes cuenta? <a href="registro.php">Regístrate</a></p>
-                        <p class="small text-muted mb-0">
-                            Al continuar aceptas los <a href="pagina.php?p=terminos">Términos y condiciones</a>
-                            y la <a href="pagina.php?p=privacidad">Política de privacidad</a>.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+  <main class="hero" id="inicio">
+    <div class="hero-texto">
+      <small><?= $pag['etiqueta'] ?></small>
+      <h1><?= $pag['titulo'] ?></h1>
+      <p><?= $pag['subtitulo'] ?></p>
+      <div class="stats">
+        <?php while ($d = mysqli_fetch_assoc($datos)) { ?>
+          <div><strong><?= $d['titulo'] ?></strong><span><?= $d['texto'] ?></span></div>
+        <?php } ?>
+      </div>
+      <?php if ($pag['imagen']) { ?><img class="portada-img" src="assets/img/<?= $pag['imagen'] ?>"><?php } ?>
     </div>
-</main>
-<?php include 'includes/pie.php'; ?>
+
+    <form class="login" id="login" method="post" action="login.php">
+      <h2>Iniciar sesión</h2>
+      <p class="sub">Ingresa con tu cuenta institucional</p>
+
+      <label>Correo</label>
+      <input type="text" name="correo" placeholder="tucorreo@uthh.edu.mx" required>
+
+      <label>Contraseña</label>
+      <input type="password" name="pass" placeholder="••••••••••" required>
+
+      <div class="fila">
+        <label class="check"><input type="checkbox"> Recordarme</label>
+        <a href="pagina.php?clave=contacto">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <?php if (isset($_GET['error'])) { ?>
+        <p class="mensaje error">Correo o contraseña incorrectos</p>
+      <?php } ?>
+      <button type="submit" class="btn btn-primario">Entrar</button>
+
+      <p class="registro">¿Aún no tienes cuenta? <a href="registro.php">Regístrate</a></p>
+      <p class="legal">Al continuar aceptas los <a href="pagina.php?clave=terminos">Términos y condiciones</a> y la <a href="pagina.php?clave=privacidad">Política de privacidad</a>.</p>
+    </form>
+  </main>
+<?php include 'footer.php'; ?>

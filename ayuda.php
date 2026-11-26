@@ -1,46 +1,27 @@
 <?php
-// centro de ayuda con preguntas frecuentes, el admin las agrega y edita
-require_once 'includes/publico.php';
-list($pagina, $secciones) = cargarPagina('ayuda');
-$preguntas = traer("SELECT * FROM pregunta ORDER BY orden, id_pregunta");
-
-$titulo = 'Ayuda';
-include 'includes/cabecera.php';
+include 'conexion.php';
+include 'funciones.php';
+$pag       = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'ayuda'"));
+$preguntas = mysqli_query($con, "SELECT * FROM pregunta ORDER BY orden");
+$titulo = "Ayuda";
+include 'header.php';
 ?>
-<!-- portada -->
-<header class="bg-primary text-white text-center py-5">
-    <div class="container">
-        <small class="text-uppercase"><?= e($pagina['etiqueta']) ?></small>
-        <h1 class="fw-bold mt-2"><?= e($pagina['titulo']) ?></h1>
-        <p class="lead mb-0"><?= e($pagina['subtitulo']) ?></p>
-    </div>
-</header>
+  <main>
+    <section class="acerca-portada">
+      <small><?= $pag['etiqueta'] ?></small>
+      <h1><?= $pag['titulo'] ?></h1>
+      <p><?= $pag['subtitulo'] ?></p>
+      <?php if ($pag['imagen']) { ?><img class="portada-img" src="assets/img/<?= $pag['imagen'] ?>"><?php } ?>
+    </section>
 
-<main class="container py-5">
-<div class="row justify-content-center">
-<div class="col-lg-8">
-    <h2 class="h4 fw-bold mb-4">Preguntas frecuentes</h2>
-
-    <!-- solo se abre una pregunta a la vez -->
-    <div class="accordion" id="preguntas">
-        <?php foreach ($preguntas as $p): ?>
-            <div class="accordion-item">
-                <h3 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pregunta<?= $p['id_pregunta'] ?>">
-                        <?= e($p['pregunta']) ?>
-                    </button>
-                </h3>
-                <div id="pregunta<?= $p['id_pregunta'] ?>" class="accordion-collapse collapse" data-bs-parent="#preguntas">
-                    <div class="accordion-body"><?= nl2br(e($p['respuesta'])) ?></div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-
-    <?php if (!$preguntas): ?>
-        <p class="text-muted">Todavía no hay preguntas.</p>
-    <?php endif; ?>
-</div>
-</div>
-</main>
-<?php include 'includes/pie.php'; ?>
+    <section class="seccion">
+      <h2>Preguntas frecuentes</h2>
+      <?php while ($p = mysqli_fetch_assoc($preguntas)) { ?>
+        <details>
+          <summary><?= $p['pregunta'] ?></summary>
+          <p><?= $p['respuesta'] ?></p>
+        </details>
+      <?php } ?>
+    </section>
+  </main>
+<?php include 'footer.php'; ?>

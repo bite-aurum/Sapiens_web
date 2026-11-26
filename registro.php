@@ -1,57 +1,102 @@
 <?php
-// registro de alumnos, docentes y coordinadores
-require_once 'includes/publico.php';
+include 'conexion.php';
+include 'funciones.php';
+$msg = "";
+$ok  = false;
 
-$titulo = 'Registro';
-include 'includes/cabecera.php';
+if ($_POST) {
+  $rol    = $_POST['rol'];
+  $nombre = limpiar($_POST['nombre']);
+  $ap     = limpiar($_POST['apellido_paterno']);
+  $am     = limpiar($_POST['apellido_materno']);
+  $correo = limpiar($_POST['correo']);
+  $pass   = $_POST['pass'];
+  $pass2  = $_POST['pass2'];
+  $clave  = limpiar($_POST['clave']);
+
+  $existe = contar("SELECT
+      (SELECT COUNT(*) FROM alumno WHERE correo = '$correo') +
+      (SELECT COUNT(*) FROM docente WHERE correo = '$correo') +
+      (SELECT COUNT(*) FROM coordinador WHERE correo = '$correo') +
+      (SELECT COUNT(*) FROM administrador WHERE correo = '$correo')");
+
+  if ($pass != $pass2) {
+    $msg = "Las contraseñas no coinciden";
+  } elseif ($existe > 0) {
+    $msg = "Ese correo ya está registrado";
+  } else {
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+
+    if ($rol == 'alumno') {
+      mysqli_query($con, "INSERT INTO alumno (nombre, apellido_paterno, apellido_materno, correo, contrasena)
+                          VALUES ('$nombre', '$ap', '$am', '$correo', '$hash')");
+    }
+
+    if ($rol == 'coordinador') {
+      $codigo = 'SAP-' . strtoupper(substr(md5(time()), 0, 5));
+      mysqli_query($con, "INSERT INTO coordinador (nombre, apellido_paterno, apellido_materno, correo, contrasena, codigo_vinculo)
+                          VALUES ('$nombre', '$ap', '$am', '$correo', '$hash', '$codigo')");
+    }
+
+    if ($rol == 'docente') {
+      $coord = mysqli_fetch_assoc(mysqli_query($con, "SELECT id_coordinador FROM coordinador WHERE codigo_vinculo = '$clave'"));
+      if (!$coord) {
+        $msg = "La clave del coordinador no existe";
+      } else {
+        mysqli_query($con, "INSERT INTO docente (nombre, apellido_paterno, apellido_materno, correo, contrasena, id_coordinador)
+                            VALUES ('$nombre', '$ap', '$am', '$correo', '$hash', $coord[id_coordinador])");
+      }
+    }
+
+    if ($msg == "") {
+      $msg = "Cuenta creada, ya puedes iniciar sesión";
+      $ok  = true;
+    }
+  }
+}
+
+$titulo = "Registrarme";
+include 'header.php';
 ?>
-<main class="bg-light py-5">
-    <div class="container">
-    <div class="row justify-content-center">
-    <div class="col-md-7 col-lg-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h1 class="h4 fw-bold">Crear cuenta</h1>
-                <p class="text-muted">Llena tus datos para registrarte</p>
+  <main class="registro-fondo">
+    <form class="login" method="post">
+      <h2>Crear cuenta</h2>
+      <p class="sub">Llena tus datos para registrarte</p>
 
-                <?php if (!empty($_GET['error'])): ?>
-                    <div class="alert alert-danger py-2"><?= e($_GET['error']) ?></div>
-                <?php endif; ?>
+      <label>Soy</label>
+      <select name="rol">
+        <option value="alumno">Alumno</option>
+        <option value="docente">Docente</option>
+        <option value="coordinador">Coordinador</option>
+      </select>
 
-                <form method="POST" action="acciones/registro.php">
-                    <div class="mb-3">
-                        <label for="rol" class="form-label">Soy</label>
-                        <select name="rol" id="rol" class="form-select" required>
-                            <option value="alumno">Alumno</option>
-                            <option value="docente">Docente</option>
-                            <option value="coordinador">Coordinador</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nombre_completo" class="form-label">Nombre completo</label>
-                        <input type="text" name="nombre_completo" id="nombre_completo" class="form-control" placeholder="Nombre y apellidos" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="correo" class="form-label">Correo institucional</label>
-                        <input type="email" name="correo" id="correo" class="form-control" placeholder="tucorreo@uthh.edu.mx" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contrasena" class="form-label">Contraseña</label>
-                        <input type="password" name="contrasena" id="contrasena" class="form-control" minlength="8" required>
-                        <div class="form-text">Mínimo 8 caracteres.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmar" class="form-label">Confirmar contraseña</label>
-                        <input type="password" name="confirmar" id="confirmar" class="form-control" minlength="8" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 fw-bold">Registrarme</button>
-                </form>
+      <label>Nombre(s)</label>
+      <input type="text" name="nombre" placeholder="Tu nombre" required>
 
-                <p class="mt-3 mb-0 small">¿Ya tienes cuenta? <a href="index.php#login">Inicia sesión</a></p>
-            </div>
-        </div>
-    </div>
-    </div>
-    </div>
-</main>
-<?php include 'includes/pie.php'; ?>
+      <label>Apellido paterno</label>
+      <input type="text" name="apellido_paterno" required>
+
+      <label>Apellido materno</label>
+      <input type="text" name="apellido_materno">
+
+      <label>Correo institucional</label>
+      <input type="text" name="correo" placeholder="tucorreo@uthh.edu.mx" required>
+
+      <label>Contraseña</label>
+      <input type="password" name="pass" placeholder="••••••••••" required>
+
+      <label>Confirmar contraseña</label>
+      <input type="password" name="pass2" placeholder="••••••••••" required>
+
+      <label>Clave del coordinador (solo docentes)</label>
+      <input type="text" name="clave" placeholder="SAP-XXXXX">
+
+      <?php if ($msg) { ?>
+        <p class="mensaje <?= $ok ? 'ok' : 'error' ?>"><?= $msg ?></p>
+      <?php } ?>
+      <button type="submit" class="btn btn-primario">Registrarme</button>
+
+      <p class="registro">¿Ya tienes cuenta? <a href="index.php#login">Inicia sesión</a></p>
+    </form>
+  </main>
+<?php include 'footer.php'; ?>
