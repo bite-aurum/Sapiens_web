@@ -10,13 +10,13 @@ $pie = ajustes();
                 <p><?= e($pie['descripcion'] ?? '') ?></p>
             </div>
 
-            <!-- plataforma, son enlaces a las secciones de acerca -->
+            <!-- plataforma, son enlaces a las secciones de quienes somos -->
             <div class="col-6 col-md-2">
                 <h6 class="text-white">Plataforma</h6>
                 <ul class="list-unstyled">
-                    <li><a class="text-white-50 text-decoration-none" href="acerca.php#proyectos">Proyectos</a></li>
-                    <li><a class="text-white-50 text-decoration-none" href="acerca.php#tareas-y-evidencias">Tareas y evidencias</a></li>
-                    <li><a class="text-white-50 text-decoration-none" href="acerca.php#reportes">Reportes</a></li>
+                    <li><a class="text-white-50 text-decoration-none" href="quienes.php#proyectos">Proyectos</a></li>
+                    <li><a class="text-white-50 text-decoration-none" href="quienes.php#tareas-y-evidencias">Tareas y evidencias</a></li>
+                    <li><a class="text-white-50 text-decoration-none" href="quienes.php#reportes">Reportes</a></li>
                 </ul>
             </div>
 

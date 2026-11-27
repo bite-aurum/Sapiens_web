@@ -34,7 +34,7 @@ include 'menu.php';
   <a href="tarea_form.php?id=<?= $idt ?>" class="btn btn-blanco btn-sm"><i class="bi bi-pencil"></i> Editar tarea</a>
 </div>
 <p class="mt-2 mb-4">
-  <span class="etiqueta <?= $t['prioridad'] ?>"><?= ucfirst($t['prioridad']) ?></span>
+  <span class="etiqueta <?= prioridad($t['fecha_limite'], $t['estado']) ?>"><?= ucfirst(prioridad($t['fecha_limite'], $t['estado'])) ?></span>
   <span class="etiqueta <?= str_replace(' ', '-', $t['estado']) ?>"><?= ucfirst($t['estado']) ?></span>
   <span class="text-muted small"><?= $t['proyecto'] ?> · Vence <?= fecha($t['fecha_limite']) ?></span>
 </p>

@@ -39,3 +39,11 @@ function paginacion($total, $pag, $url) {
   }
   echo '</div>';
 }
+
+function prioridad($fecha, $estado) {
+  if ($estado == 'completada') return 'baja';
+  $dias = (strtotime($fecha) - strtotime(date('Y-m-d'))) / 86400;
+  if ($dias <= 3) return 'alta';
+  if ($dias <= 7) return 'media';
+  return 'baja';
+}
