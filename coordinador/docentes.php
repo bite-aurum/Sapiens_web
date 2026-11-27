@@ -34,7 +34,12 @@ if ($estado == '1') $filtro .= " AND activo = 1";
 if ($estado == '0') $filtro .= " AND activo = 0";
 if ($materia != '') $filtro .= " AND departamento = '$materia'";
 
-$docentes = mysqli_query($con, "SELECT * FROM docente WHERE id_coordinador = $id $filtro ORDER BY nombre");
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$totalLista = contar("SELECT COUNT(*) FROM docente WHERE id_coordinador = $id $filtro");
+$docentes   = mysqli_query($con, "SELECT * FROM docente WHERE id_coordinador = $id $filtro ORDER BY nombre LIMIT $inicio, 5");
 $materias = mysqli_query($con, "SELECT DISTINCT departamento FROM docente WHERE id_coordinador = $id AND departamento != ''");
 
 $pagina = 'docentes';
@@ -88,7 +93,7 @@ include 'menu.php';
 </form>
 
 <div class="tarjeta lista">
-  <div class="titulo-seccion">Docentes registrados <span class="normal text-muted">Total: <?= mysqli_num_rows($docentes) ?></span></div>
+  <div class="titulo-seccion">Docentes registrados <span class="normal text-muted">Total: <?= $totalLista ?></span></div>
   <?php if (mysqli_num_rows($docentes) == 0) { ?>
     <div class="vacio">
       <span class="icono"><i class="bi bi-person-x"></i></span>
@@ -120,6 +125,8 @@ include 'menu.php';
     </div>
   <?php } ?>
 </div>
+
+<?php paginacion($totalLista, $pag, "docentes.php?buscar=$buscar&estado=$estado&materia=$materia&"); ?>
 </main>
 </body>
 </html>
