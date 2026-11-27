@@ -1,14 +1,14 @@
 <?php
 $paginas = [
-  'inicio' => 'Inicio', 'acerca' => 'Acerca de S.', 'quienes' => 'Quiénes somos', 'antecedentes' => 'Antecedentes', 'ayuda' => 'Ayuda',
+  'inicio' => 'Inicio', 'quienes' => 'Quiénes somos', 'antecedentes' => 'Antecedentes', 'ayuda' => 'Ayuda',
   'guia' => 'Guía', 'contacto' => 'Contacto', 'privacidad' => 'Privacidad', 'terminos' => 'Términos',
   'cookies' => 'Cookies', 'proteccion' => 'Protección',
 ];
 
 $ver = "../pagina.php?clave=$clave";
 if ($clave == 'inicio') $ver = "../index.php";
-if ($clave == 'quienes') $ver = "../acerca.php";
-if (in_array($clave, ['acerca', 'antecedentes', 'ayuda'])) $ver = "../$clave.php";
+if ($clave == 'quienes') $ver = "../quienes.php";
+if (in_array($clave, ['antecedentes', 'ayuda'])) $ver = "../$clave.php";
 ?>
 <!DOCTYPE html>
 <html lang="es">

@@ -21,7 +21,7 @@ while ($f = mysqli_fetch_assoc($res)) {
     <a href="index.php"><img class="logo" src="assets/img/<?= $aj['logo'] ?>" alt="<?= $aj['marca'] ?>"></a>
     <nav class="nav">
       <a href="index.php">Inicio</a>
-      <a href="acerca.php">Acerca de SAPIENS</a>
+      <a href="quienes.php">Quiénes somos</a>
       <a href="antecedentes.php">Antecedentes</a>
       <a href="ayuda.php">Ayuda</a>
     </nav>
