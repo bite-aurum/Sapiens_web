@@ -20,7 +20,6 @@
     <a href="proyectos.php" class="<?= $pagina == 'proyectos' ? 'activo' : '' ?>"><i class="bi bi-folder"></i> Proyectos</a>
   </nav>
   <div class="usuario">
-    <a href="docentes.php" class="campana"><i class="bi bi-bell"></i></a>
     <a href="../perfil.php" class="d-flex align-items-center gap-2">
       <span class="avatar"><?= iniciales($_SESSION['nombre']) ?></span>
       <span><?= $_SESSION['nombre'] ?><small>Coordinador</small></span>
