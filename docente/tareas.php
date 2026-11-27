@@ -45,7 +45,7 @@ while ($t = mysqli_fetch_assoc($tareas)) {
   <a href="tarea.php?id=<?= $t['id_tarea'] ?>" class="tarjeta fila mb-2">
     <span><?= $t['titulo'] ?></span>
     <span class="d-flex gap-2">
-      <span class="etiqueta <?= $t['prioridad'] ?>"><?= ucfirst($t['prioridad']) ?></span>
+      <span class="etiqueta <?= prioridad($t['fecha_limite'], $t['estado']) ?>"><?= ucfirst(prioridad($t['fecha_limite'], $t['estado'])) ?></span>
       <span class="etiqueta <?= str_replace(' ', '-', $t['estado']) ?>"><?= ucfirst($t['estado']) ?></span>
     </span>
   </a>

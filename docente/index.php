@@ -77,7 +77,7 @@ include 'menu.php';
             <small class="text-muted">• <?= $t['proyecto'] ?></small>
           </td>
           <td><?= fecha($t['fecha_limite']) ?></td>
-          <td><span class="etiqueta <?= $t['prioridad'] ?>"><?= ucfirst($t['prioridad']) ?></span></td>
+          <td><span class="etiqueta <?= prioridad($t['fecha_limite'], $t['estado']) ?>"><?= ucfirst(prioridad($t['fecha_limite'], $t['estado'])) ?></span></td>
         </tr>
       <?php } ?>
     </table>
