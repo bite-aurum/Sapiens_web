@@ -16,9 +16,14 @@ if ($f == 'retraso')    $filtro .= " AND p.fecha_fin < CURDATE() AND p.estado !=
 if ($buscar != '')      $filtro .= " AND p.nombre LIKE '%$buscar%'";
 if ($doc > 0)           $filtro .= " AND p.id_docente = $doc";
 
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$totalLista = contar("SELECT COUNT(*) FROM proyecto p JOIN docente d ON d.id_docente = p.id_docente WHERE d.id_coordinador = $id $filtro");
 $proyectos = mysqli_query($con, "SELECT p.*, d.nombre AS docente, d.apellido_paterno AS docente_ap FROM proyecto p
   JOIN docente d ON d.id_docente = p.id_docente
-  WHERE d.id_coordinador = $id $filtro ORDER BY p.id_proyecto DESC");
+  WHERE d.id_coordinador = $id $filtro ORDER BY p.id_proyecto DESC LIMIT $inicio, 5");
 
 $mios        = "FROM proyecto p JOIN docente d ON d.id_docente = p.id_docente WHERE d.id_coordinador = $id";
 $total       = contar("SELECT COUNT(*) $mios");
@@ -94,6 +99,8 @@ include 'menu.php';
     </div>
   <?php } ?>
 </div>
+
+<?php paginacion($totalLista, $pag, "proyectos.php?f=$f&buscar=$buscar&docente=$doc&"); ?>
 </main>
 </body>
 </html>
