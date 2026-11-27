@@ -88,3 +88,6 @@ a.fila:hover { background: #faf8f3; }
 .etiqueta { height: fit-content; }
 .vista-previa pre { font-family: inherit; white-space: pre-wrap; }
 .dato .normal { text-transform: none; letter-spacing: 0; }
+.paginacion { display: flex; justify-content: center; gap: 6px; margin-top: 20px; }
+.paginacion a { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #fff; border: 1px solid #eae4d6; color: #292524; font-size: 14px; }
+.paginacion a.activo { background: #0f766e; border-color: #0f766e; color: #fff; font-weight: 600; }
