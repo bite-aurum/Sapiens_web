@@ -13,15 +13,14 @@ if (isset($_POST['guardar'])) {
   $obj    = limpiar($_POST['objetivos']);
   $ini    = limpiar($_POST['fecha_inicio']);
   $fin    = limpiar($_POST['fecha_fin']);
-  $estado = limpiar($_POST['estado']);
 
   if ($idp == 0) {
     mysqli_query($con, "INSERT INTO proyecto (nombre, descripcion, problematica, objetivos, fecha_inicio, fecha_fin, estado, id_docente)
-                        VALUES ('$nombre', '$desc', '$prob', '$obj', '$ini', '$fin', '$estado', $id)");
+                        VALUES ('$nombre', '$desc', '$prob', '$obj', '$ini', '$fin', 'activo', $id)");
     $idp = mysqli_insert_id($con);
   } else {
     mysqli_query($con, "UPDATE proyecto SET nombre='$nombre', descripcion='$desc', problematica='$prob', objetivos='$obj',
-                        fecha_inicio='$ini', fecha_fin='$fin', estado='$estado' WHERE id_proyecto = $idp AND id_docente = $id");
+                        fecha_inicio='$ini', fecha_fin='$fin' WHERE id_proyecto = $idp AND id_docente = $id");
   }
 
   mysqli_query($con, "DELETE FROM alumno_proyecto WHERE id_proyecto = $idp");
@@ -68,11 +67,6 @@ include 'menu.php';
         <div class="col-md-6 mb-3"><label>Fecha de inicio</label><input type="date" name="fecha_inicio" class="form-control" value="<?= $p['fecha_inicio'] ?>" required></div>
         <div class="col-md-6 mb-3"><label>Fecha fin estimada</label><input type="date" name="fecha_fin" class="form-control" value="<?= $p['fecha_fin'] ?>" required></div>
       </div>
-      <label>Estado</label>
-      <select name="estado" class="form-select">
-        <option value="activo" <?= $p['estado'] == 'activo' ? 'selected' : '' ?>>Activo</option>
-        <option value="finalizado" <?= $p['estado'] == 'finalizado' ? 'selected' : '' ?>>Finalizado</option>
-      </select>
     </div>
 
     <div class="tarjeta mb-4">

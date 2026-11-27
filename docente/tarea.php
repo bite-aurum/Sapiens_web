@@ -9,6 +9,7 @@ if (isset($_GET['estado'])) {
   $s = (int) $_GET['sub'];
   $e = limpiar($_GET['estado']);
   mysqli_query($con, "UPDATE subtarea SET estado = '$e' WHERE id_subtarea = $s");
+  actualizarEstado($idt);
   header("Location: tarea.php?id=$idt");
   exit;
 }

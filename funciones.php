@@ -47,3 +47,28 @@ function prioridad($fecha, $estado) {
   if ($dias <= 7) return 'media';
   return 'baja';
 }
+
+function actualizarEstado($id_tarea) {
+  global $con;
+  $total  = contar("SELECT COUNT(*) FROM subtarea WHERE id_tarea = $id_tarea");
+  $hechas = contar("SELECT COUNT(*) FROM subtarea WHERE id_tarea = $id_tarea AND estado = 'completada'");
+
+  if ($total > 0 && $hechas == $total) {
+    $estado = 'completada';
+  } elseif ($hechas > 0) {
+    $estado = 'en progreso';
+  } else {
+    $estado = 'pendiente';
+  }
+  mysqli_query($con, "UPDATE tarea SET estado = '$estado' WHERE id_tarea = $id_tarea");
+
+  $tarea = mysqli_fetch_assoc(mysqli_query($con, "SELECT id_proyecto FROM tarea WHERE id_tarea = $id_tarea"));
+  $idp   = $tarea['id_proyecto'];
+  $faltan = contar("SELECT COUNT(*) FROM tarea WHERE id_proyecto = $idp AND estado != 'completada'");
+
+  if ($faltan == 0) {
+    mysqli_query($con, "UPDATE proyecto SET estado = 'finalizado' WHERE id_proyecto = $idp");
+  } else {
+    mysqli_query($con, "UPDATE proyecto SET estado = 'activo' WHERE id_proyecto = $idp");
+  }
+}

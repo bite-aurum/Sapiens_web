@@ -12,16 +12,15 @@ if (isset($_POST['guardar'])) {
   $desc      = limpiar($_POST['descripcion']);
   $criterios = limpiar($_POST['criterios']);
   $fecha     = limpiar($_POST['fecha_limite']);
-  $estado    = limpiar($_POST['estado']);
-  $prior     = prioridad($fecha, $estado);
+  $prior     = prioridad($fecha, 'pendiente');
 
   if ($idt == 0) {
     mysqli_query($con, "INSERT INTO tarea (titulo, descripcion, criterios, fecha_limite, prioridad, estado, id_proyecto)
-                        VALUES ('$titulo', '$desc', '$criterios', '$fecha', '$prior', '$estado', $proyecto)");
+                        VALUES ('$titulo', '$desc', '$criterios', '$fecha', '$prior', 'pendiente', $proyecto)");
     $idt = mysqli_insert_id($con);
   } else {
     mysqli_query($con, "UPDATE tarea SET titulo='$titulo', descripcion='$desc', criterios='$criterios', fecha_limite='$fecha',
-                        prioridad='$prior', estado='$estado', id_proyecto=$proyecto WHERE id_tarea = $idt");
+                        prioridad='$prior', id_proyecto=$proyecto WHERE id_tarea = $idt");
   }
 
   $quitar = $_POST['quitar'] ?? [];
@@ -43,6 +42,8 @@ if (isset($_POST['guardar'])) {
       mysqli_query($con, "INSERT INTO alumno_subtarea (id_alumno, id_subtarea) VALUES ($alumno, $ids)");
     }
   }
+
+  actualizarEstado($idt);
 
   header("Location: tarea.php?id=$idt");
   exit;
@@ -82,16 +83,8 @@ include 'menu.php';
     <textarea name="descripcion" class="form-control mb-3" rows="3" placeholder="Detalles de la tarea"><?= $t['descripcion'] ?></textarea>
     <label>Criterios de aceptación</label>
     <textarea name="criterios" class="form-control mb-3" rows="3" placeholder="Uno por renglón"><?= $t['criterios'] ?></textarea>
-    <div class="row">
-      <div class="col-md-6 mb-3"><label>Fecha límite</label><input type="date" name="fecha_limite" class="form-control" value="<?= $t['fecha_limite'] ?>" required></div>
-      <div class="col-md-6 mb-3"><label>Estado</label>
-        <select name="estado" class="form-select">
-          <option value="pendiente" <?= $t['estado'] == 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
-          <option value="en progreso" <?= $t['estado'] == 'en progreso' ? 'selected' : '' ?>>En progreso</option>
-          <option value="completada" <?= $t['estado'] == 'completada' ? 'selected' : '' ?>>Completada</option>
-        </select>
-      </div>
-    </div>
+    <label>Fecha límite</label>
+    <input type="date" name="fecha_limite" class="form-control mb-3" value="<?= $t['fecha_limite'] ?>" required>
 
     <div class="titulo-seccion mt-3">Subtareas del equipo</div>
     <div class="row g-3">
