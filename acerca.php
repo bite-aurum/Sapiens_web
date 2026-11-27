@@ -1,13 +1,19 @@
 <?php
 include 'conexion.php';
 include 'funciones.php';
-$pag = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'acerca'"));
-$res = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $pag[id_pagina] ORDER BY orden");
-$secciones = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-$primera  = array_shift($secciones);
-$ultima   = array_pop($secciones);
-$tarjetas = $secciones;
+$pag = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'acerca'"));
+$idp = $pag['id_pagina'];
+
+$primera  = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp ORDER BY orden LIMIT 1"));
+$ultima   = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp ORDER BY orden DESC LIMIT 1"));
+$tarjetas = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp
+  AND id_seccion != $primera[id_seccion] AND id_seccion != $ultima[id_seccion] ORDER BY orden");
+
+$quienes = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'quienes'"));
+if ($quienes) {
+  $equipo = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $quienes[id_pagina] ORDER BY orden");
+}
 
 $titulo = "Acerca de SAPIENS";
 include 'header.php';
@@ -28,7 +34,7 @@ include 'header.php';
     <section class="seccion seccion-gris">
       <h2>¿Qué puedes hacer?</h2>
       <div class="tarjetas">
-        <?php foreach ($tarjetas as $t) { ?>
+        <?php while ($t = mysqli_fetch_assoc($tarjetas)) { ?>
           <div class="tarjeta">
             <h3><?= $t['titulo'] ?></h3>
             <p><?= $t['texto'] ?></p>
@@ -37,7 +43,22 @@ include 'header.php';
       </div>
     </section>
 
-    <section class="seccion">
+    <?php if ($quienes) { ?>
+      <section class="seccion">
+        <h2><?= $quienes['titulo'] ?></h2>
+        <p><?= $quienes['subtitulo'] ?></p>
+        <div class="tarjetas">
+          <?php while ($e = mysqli_fetch_assoc($equipo)) { ?>
+            <div class="tarjeta">
+              <h3><?= $e['titulo'] ?></h3>
+              <p><?= $e['texto'] ?></p>
+            </div>
+          <?php } ?>
+        </div>
+      </section>
+    <?php } ?>
+
+    <section class="seccion seccion-gris">
       <h2><?= $ultima['titulo'] ?></h2>
       <p><?= $ultima['texto'] ?></p>
       <a href="registro.php" class="btn btn-primario boton-final">Crear mi cuenta</a>
