@@ -5,11 +5,16 @@ include '../conexion.php';
 include '../funciones.php';
 $id = $_SESSION['id'];
 
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$total     = contar("SELECT COUNT(*) FROM alumno_proyecto WHERE id_alumno = $id");
 $proyectos = mysqli_query($con, "SELECT p.*, ap.rol, d.nombre AS docente, d.apellido_paterno AS docente_ap
   FROM alumno_proyecto ap
   JOIN proyecto p ON p.id_proyecto = ap.id_proyecto
   JOIN docente d ON d.id_docente = p.id_docente
-  WHERE ap.id_alumno = $id");
+  WHERE ap.id_alumno = $id LIMIT $inicio, 5");
 
 $pagina = 'proyectos';
 include 'menu.php';
@@ -36,6 +41,8 @@ include 'menu.php';
     </a>
   <?php } ?>
 </div>
+
+<?php paginacion($total, $pag, "proyectos.php?"); ?>
 </main>
 </body>
 </html>
