@@ -19,7 +19,13 @@ if (isset($_GET['marcar'])) {
   $s = (int) $_GET['marcar'];
   $mia = contar("SELECT COUNT(*) FROM alumno_subtarea WHERE id_subtarea = $s AND id_alumno = $id");
   if ($mia > 0) {
-    mysqli_query($con, "UPDATE subtarea SET estado = IF(estado = 'completada', 'pendiente', 'completada') WHERE id_subtarea = $s");
+    $sub = mysqli_fetch_assoc(mysqli_query($con, "SELECT estado FROM subtarea WHERE id_subtarea = $s"));
+    if ($sub['estado'] == 'completada') {
+      $nuevo = 'pendiente';
+    } else {
+      $nuevo = 'completada';
+    }
+    mysqli_query($con, "UPDATE subtarea SET estado = '$nuevo' WHERE id_subtarea = $s");
   }
   header("Location: tarea.php?id=$idt");
   exit;

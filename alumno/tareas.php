@@ -8,10 +8,16 @@ $id = $_SESSION['id'];
 $estado = limpiar($_GET['estado'] ?? '');
 $filtro = $estado != '' ? "AND t.estado = '$estado'" : "";
 
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$total  = contar("SELECT COUNT(*) FROM tarea t JOIN alumno_proyecto ap ON ap.id_proyecto = t.id_proyecto
+                  WHERE ap.id_alumno = $id $filtro");
 $tareas = mysqli_query($con, "SELECT t.*, p.nombre AS proyecto FROM tarea t
   JOIN alumno_proyecto ap ON ap.id_proyecto = t.id_proyecto
   JOIN proyecto p ON p.id_proyecto = t.id_proyecto
-  WHERE ap.id_alumno = $id $filtro ORDER BY t.fecha_limite");
+  WHERE ap.id_alumno = $id $filtro ORDER BY t.fecha_limite LIMIT $inicio, 5");
 
 $pagina = 'tareas';
 include 'menu.php';
@@ -41,6 +47,8 @@ include 'menu.php';
     </a>
   <?php } ?>
 </div>
+
+<?php paginacion($total, $pag, "tareas.php?estado=$estado&"); ?>
 </main>
 </body>
 </html>
