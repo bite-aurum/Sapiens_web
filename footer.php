@@ -6,9 +6,9 @@
       </div>
       <div>
         <h3>Plataforma</h3>
-        <a href="acerca.php">Proyectos</a>
-        <a href="acerca.php">Tareas y evidencias</a>
-        <a href="acerca.php">Reportes</a>
+        <a href="quienes.php">Proyectos</a>
+        <a href="quienes.php">Tareas y evidencias</a>
+        <a href="quienes.php">Reportes</a>
       </div>
       <div>
         <h3>Soporte</h3>
