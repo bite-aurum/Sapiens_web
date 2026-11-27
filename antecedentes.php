@@ -1,13 +1,14 @@
 <?php
 include 'conexion.php';
 include 'funciones.php';
-$pag = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'antecedentes'"));
-$res = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $pag[id_pagina] ORDER BY orden");
-$secciones = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-$primera  = array_shift($secciones);
-$ultima   = array_pop($secciones);
-$tarjetas = $secciones;
+$pag = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM pagina WHERE clave = 'antecedentes'"));
+$idp = $pag['id_pagina'];
+
+$primera  = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp ORDER BY orden LIMIT 1"));
+$ultima   = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp ORDER BY orden DESC LIMIT 1"));
+$tarjetas = mysqli_query($con, "SELECT * FROM seccion WHERE id_pagina = $idp
+  AND id_seccion != $primera[id_seccion] AND id_seccion != $ultima[id_seccion] ORDER BY orden");
 
 $titulo = "Antecedentes";
 include 'header.php';
@@ -28,7 +29,7 @@ include 'header.php';
     <section class="seccion seccion-gris">
       <h2>¿Qué cambió en la versión web?</h2>
       <div class="tarjetas">
-        <?php foreach ($tarjetas as $t) { ?>
+        <?php while ($t = mysqli_fetch_assoc($tarjetas)) { ?>
           <div class="tarjeta">
             <h3><?= $t['titulo'] ?></h3>
             <p><?= $t['texto'] ?></p>

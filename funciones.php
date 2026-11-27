@@ -26,9 +26,16 @@ function iniciales($nombre) {
   return strtoupper(mb_substr($nombre, 0, 2));
 }
 
-function rutaArchivo($url) {
-  $nombre = basename($url);
-  if (is_file("../../sapiens_movil/uploads/$nombre")) return "../../sapiens_movil/uploads/$nombre";
-  if (is_file("../uploads/$nombre")) return "../uploads/$nombre";
-  return '';
+function paginacion($total, $pag, $url) {
+  $paginas = ceil($total / 5);
+  if ($paginas <= 1) return;
+  echo '<div class="paginacion">';
+  for ($i = 1; $i <= $paginas; $i++) {
+    if ($i == $pag) {
+      echo "<a class='activo'>$i</a>";
+    } else {
+      echo "<a href='{$url}pag=$i'>$i</a>";
+    }
+  }
+  echo '</div>';
 }

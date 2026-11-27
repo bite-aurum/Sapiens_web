@@ -16,9 +16,15 @@ $evidencias = contar("SELECT COUNT(*) FROM archivo a
 $alumnos    = contar("SELECT COUNT(DISTINCT ap.id_alumno) FROM alumno_proyecto ap
                       JOIN proyecto p ON p.id_proyecto = ap.id_proyecto WHERE p.id_docente = $id");
 
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$totalRecientes = contar("SELECT COUNT(*) FROM tarea t JOIN proyecto p ON p.id_proyecto = t.id_proyecto
+                          WHERE p.id_docente = $id AND t.estado != 'completada'");
 $recientes = mysqli_query($con, "SELECT t.*, p.nombre AS proyecto FROM tarea t
   JOIN proyecto p ON p.id_proyecto = t.id_proyecto
-  WHERE p.id_docente = $id AND t.estado != 'completada' ORDER BY t.fecha_limite LIMIT 5");
+  WHERE p.id_docente = $id AND t.estado != 'completada' ORDER BY t.fecha_limite LIMIT $inicio, 5");
 
 $pagina = 'inicio';
 include 'menu.php';
@@ -77,6 +83,7 @@ include 'menu.php';
     </table>
   <?php } ?>
 </div>
+<?php paginacion($totalRecientes, $pag, "index.php?"); ?>
 </main>
 </body>
 </html>

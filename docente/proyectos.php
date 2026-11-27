@@ -12,7 +12,12 @@ if (isset($_GET['borrar'])) {
   exit;
 }
 
-$proyectos = mysqli_query($con, "SELECT * FROM proyecto WHERE id_docente = $id ORDER BY id_proyecto DESC");
+$pag = (int) ($_GET['pag'] ?? 1);
+if ($pag < 1) $pag = 1;
+$inicio = ($pag - 1) * 5;
+
+$total     = contar("SELECT COUNT(*) FROM proyecto WHERE id_docente = $id");
+$proyectos = mysqli_query($con, "SELECT * FROM proyecto WHERE id_docente = $id ORDER BY id_proyecto DESC LIMIT $inicio, 5");
 $pagina = 'proyectos';
 include 'menu.php';
 ?>
@@ -54,6 +59,8 @@ include 'menu.php';
     </div>
   </div>
 <?php } ?>
+
+<?php paginacion($total, $pag, "proyectos.php?"); ?>
 </main>
 </body>
 </html>
