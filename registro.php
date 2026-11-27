@@ -12,7 +12,6 @@ if ($_POST) {
   $correo = limpiar($_POST['correo']);
   $pass   = $_POST['pass'];
   $pass2  = $_POST['pass2'];
-  $clave  = limpiar($_POST['clave']);
 
   $existe = contar("SELECT
       (SELECT COUNT(*) FROM alumno WHERE correo = '$correo') +
@@ -39,13 +38,8 @@ if ($_POST) {
     }
 
     if ($rol == 'docente') {
-      $coord = mysqli_fetch_assoc(mysqli_query($con, "SELECT id_coordinador FROM coordinador WHERE codigo_vinculo = '$clave'"));
-      if (!$coord) {
-        $msg = "La clave del coordinador no existe";
-      } else {
-        mysqli_query($con, "INSERT INTO docente (nombre, apellido_paterno, apellido_materno, correo, contrasena, id_coordinador)
-                            VALUES ('$nombre', '$ap', '$am', '$correo', '$hash', $coord[id_coordinador])");
-      }
+      mysqli_query($con, "INSERT INTO docente (nombre, apellido_paterno, apellido_materno, correo, contrasena)
+                          VALUES ('$nombre', '$ap', '$am', '$correo', '$hash')");
     }
 
     if ($msg == "") {
@@ -79,17 +73,14 @@ include 'header.php';
       <label>Apellido materno</label>
       <input type="text" name="apellido_materno">
 
-      <label>Correo institucional</label>
-      <input type="text" name="correo" placeholder="tucorreo@uthh.edu.mx" required>
+      <label>Correo</label>
+      <input type="text" name="correo" placeholder="tucorreo@ejemplo.com" required>
 
       <label>Contraseña</label>
       <input type="password" name="pass" placeholder="••••••••••" required>
 
       <label>Confirmar contraseña</label>
       <input type="password" name="pass2" placeholder="••••••••••" required>
-
-      <label>Clave del coordinador (solo docentes)</label>
-      <input type="text" name="clave" placeholder="SAP-XXXXX">
 
       <?php if ($msg) { ?>
         <p class="mensaje <?= $ok ? 'ok' : 'error' ?>"><?= $msg ?></p>
